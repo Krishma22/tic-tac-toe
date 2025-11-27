@@ -47,9 +47,9 @@ function Square({value , onSquareClick}){
   );
 }
 
-export default function Board() {
-  const[xIsNext, setXIsNext] = useState(true);
-  const[squares, setSquares] = useState(Array(9).fill(null));
+function Board({xIsNext, squares, onPlay}) {
+  // const[xIsNext, setXIsNext] = useState(true);
+  // const[squares, setSquares] = useState(Array(9).fill(null));
 
   function handleClick(i){
     if(calculateWinner(squares) || squares[i]){
@@ -62,9 +62,10 @@ export default function Board() {
     else{
       nextSquares[i] = 'O';
     }
-    console.log(i + "clicked");
-    setSquares(nextSquares);
-    setXIsNext(!xIsNext);
+    onPlay(nextSquares);
+    // console.log(i + "clicked");
+    // setSquares(nextSquares);
+    // setXIsNext(!xIsNext);
   }
 
   const winner = calculateWinner(squares);
@@ -116,6 +117,65 @@ function calculateWinner(squares){
     }
   }
   return null;
+}
+
+export default function Game(){
+  const[xIsNext, setXIsNext] = useState(true);
+  const[history, setHistory] = useState([Array(9).fill(null)]);// it's meaning?
+  const currentSquares = history[history.length - 1];
+  const [pastMove, setPastMove] = useState(false);
+
+  function handlePlay(nextSquares){
+    setHistory([...history,nextSquares]);
+    setXIsNext(!xIsNext);
+  }
+
+  function HandleMove(boardState, move){
+    console.log(history[move]);
+    // currentSquares = history[move];
+    setPastMove(true);
+    return(
+      <div>
+        setXIsNext(xIsNext);
+      <Board xIsNext = {xIsNext} squares = {boardState} onPlay = {handlePlay}/>
+      </div>
+      // {currentSquares} = {history[move]} 
+    );
+  }
+ 
+
+  const moves = history.map((boardState, move) => {
+    let status ;
+    if(move > 0){
+      status = "go to move" + move;
+    }
+    else{
+      status = "go to start";
+    }
+    return(
+      <>
+      <button onClick = {() => HandleMove(boardState, move)}>{status}</button>
+      <br></br>
+      </>
+    );
+  })
+
+
+
+
+
+
+  
+  return(
+    <div className = "game">
+      <div className = "game-board">
+        <Board xIsNext = {xIsNext} squares = {currentSquares} onPlay = {handlePlay} pastClicked = {pastMove}/>
+      </div>
+      <div className = "game-info">
+        <ol>{moves}</ol>
+      </div>
+    </div>
+  )
 }
 
  
